@@ -2,7 +2,7 @@
   "require": {
     "esd/base-server":"~0.1",
     "esd/aop-plugin":"~0.1",
-    "seinopsys/postgresql-database-class:": "~3.0"
+    "seinopsys/postgresql-database-class": "~3.0"
   },
   "autoload": {
     "psr-4": {
