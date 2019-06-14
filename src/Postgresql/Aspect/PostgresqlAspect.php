@@ -3,7 +3,7 @@
 namespace ESD\Plugins\Postgresql\Aspect;
 
 
-use ESD\BaseServer\Coroutine\Channel;
+use ESD\Core\Coroutine\Channel;
 use ESD\Plugins\Aop\OrderAspect;
 use ESD\Plugins\Postgresql\Annotation\Isolation;
 use ESD\Plugins\Postgresql\Annotation\Propagation;
