@@ -1,0 +1,30 @@
+{
+  "require": {
+    "esd/base-server":"~0.1",
+    "esd/aop-plugin":"~0.1",
+    "seinopsys/postgresql-database-class:": "~3.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "ESD\\Plugins\\": "src/"
+    }
+  },
+  "authors": [
+    {
+      "name": "Zhenqiang.Zhang",
+      "email": "565364226@qq.com",
+      "homepage": "https://github.com/brealord"
+    }
+  ],
+  "name": "esd/postgresql-plugin",
+  "type": "library",
+  "keywords": ["server", "swoole"],
+  "description": "postgresql-plugin",
+  "license": "MIT",
+  "repositories": {
+    "packagist": {
+      "type": "composer",
+      "url": "https://packagist.laravel-china.org"
+    }
+  }
+}
