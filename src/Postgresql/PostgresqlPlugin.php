@@ -2,11 +2,12 @@
 
 namespace ESD\Plugins\Postgresql;
 
-use ESD\BaseServer\Plugins\Logger\GetLogger;
-use ESD\BaseServer\Server\Context;
-use ESD\BaseServer\Server\Plugin\AbstractPlugin;
-use ESD\BaseServer\Server\PlugIn\PluginInterfaceManager;
-use ESD\BaseServer\Server\Server;
+use Doctrine\Common\Annotations\AnnotationReader;
+use ESD\Core\Context\Context;
+use ESD\Core\PlugIn\AbstractPlugin;
+use ESD\Core\PlugIn\PluginInterfaceManager;
+use ESD\Core\Plugins\Logger\GetLogger;
+use ESD\Core\Server\Server;
 use ESD\Plugins\Aop\AopConfig;
 use ESD\Plugins\Aop\AopPlugin;
 use ESD\Plugins\Postgresql\Aspect\PostgresqlAspect;
@@ -15,9 +16,18 @@ class PostgresqlPlugin extends AbstractPlugin
 {
     use GetLogger;
     /**
-     * @var PostgresqlConfig[]
+     * @var postgresqlConfig
      */
-    protected $configList = [];
+    protected $postgresqlConfig;
+
+    public function __construct()
+    {
+        parent::__construct();
+        $this->postgresqlConfig = new PostgresqlConfig();
+        $this->postgresqlConfig->setPostgresqlConfigs([]);
+        AnnotationReader::addGlobalIgnoredName('params');
+        $this->atAfter(AopPlugin::class);
+    }
 
     /**
      * 获取插件名字
@@ -26,12 +36,6 @@ class PostgresqlPlugin extends AbstractPlugin
     public function getName(): string
     {
         return "Postrgresql";
-    }
-
-    public function __construct()
-    {
-        parent::__construct();
-        $this->atAfter(AopPlugin::class);
     }
 
     public function init(Context $context)
@@ -57,16 +61,22 @@ class PostgresqlPlugin extends AbstractPlugin
     /**
      * 在服务启动前
      * @param Context $context
-     * @return mixed
-     * @throws \ESD\BaseServer\Server\Exception\ConfigException
+     * @throws \Exception
      */
     public function beforeServerStart(Context $context)
     {
         //所有配置合併
-        foreach ($this->configList as $config) {
+        foreach ($this->postgresqlConfig as $config) {
             $config->merge();
         }
-        $postgresDbProxy = new PostgresqliDbProxy();
+        $configs = Server::$instance->getConfigContext()->get(PostgresqlOneConfig::key, []);
+        foreach ($configs as $key => $value) {
+            $postgresqlOneConfig = new PostgresqlOneConfig("", "", "", "");
+            $postgresqlOneConfig->setName($key);
+            $this->postgresqlConfig->addPostgresqlOneConfig($postgresqlOneConfig->buildFromConfig($value));
+        }
+
+        $postgresDbProxy = new PostgresDbProxy();
         $this->setToDIContainer(PostgresDb::class, $postgresDbProxy);
         $this->setToDIContainer(PostgresDb::class, $postgresDbProxy);
     }
@@ -83,13 +93,13 @@ class PostgresqlPlugin extends AbstractPlugin
         $postgresqlManyPool = new PostgresqlManyPool();
         //重新获取配置
         $this->configList = [];
-        $configs = Server::$instance->getConfigContext()->get(PostgresqlConfig::key, []);
+        $configs = Server::$instance->getConfigContext()->get(PostgresqlOneConfig::key, []);
         if (empty($configs)) {
             $this->warn("没有postgresql配置");
             return false;
         }
         foreach ($configs as $key => $value) {
-            $postgresqlConfig = new PostgresqlConfig("", "", "", "");
+            $postgresqlConfig = new PostgresqlOneConfig("", "", "", "");
             $postgresqlConfig->setName($key);
             $this->configList[$key] = $postgresqlConfig->buildFromConfig($value);
             $postgresqlPool = new PostgresqlPool($postgresqlConfig);
@@ -103,7 +113,7 @@ class PostgresqlPlugin extends AbstractPlugin
     }
 
     /**
-     * @return postgresqlConfig[]
+     * @return PostgresqlOneConfig[]
      */
     public function getConfigList(): array
     {
@@ -111,7 +121,7 @@ class PostgresqlPlugin extends AbstractPlugin
     }
 
     /**
-     * @param postgresqlConfig[] $configList
+     * @param PostgresqlOneConfig[] $configList
      */
     public function setConfigList(array $configList): void
     {
@@ -119,9 +129,9 @@ class PostgresqlPlugin extends AbstractPlugin
     }
 
     /**
-     * @param postgresqlConfig $mysqlConfig
+     * @param PostgresqlOneConfig $mysqlConfig
      */
-    public function addConfigList(postgresqlConfig $mysqlConfig): void
+    public function addConfigList(PostgresqlOneConfig $mysqlConfig): void
     {
         $this->configList[$mysqlConfig->getName()] = $mysqlConfig;
     }

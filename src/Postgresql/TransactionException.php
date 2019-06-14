@@ -9,7 +9,7 @@
 namespace ESD\Plugins\Postgresql;
 
 
-use ESD\BaseServer\Exception;
+use ESD\Core\Exception;
 
 class TransactionException extends Exception
 {

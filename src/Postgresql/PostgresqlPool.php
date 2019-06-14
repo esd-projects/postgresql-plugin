@@ -3,7 +3,7 @@
 namespace ESD\Plugins\Postgresql;
 
 
-use ESD\BaseServer\Coroutine\Channel;
+use ESD\Core\Channel\Channel;
 
 class PostgresqlPool
 {
@@ -12,20 +12,20 @@ class PostgresqlPool
      */
     protected $pool;
     /**
-     * @var PostgresqlConfig
+     * @var PostgresqlOneConfig
      */
     protected $postgresqlConfig;
 
     /**
      * PostgresqlPool constructor.
-     * @param PostgresqlConfig $postgresqlConfig
+     * @param PostgresqlOneConfig $postgresqlConfig
      * @throws PostgresqlException
      */
-    public function __construct(PostgresqlConfig $postgresqlConfig)
+    public function __construct(PostgresqlOneConfig $postgresqlConfig)
     {
         $this->postgresqlConfig = $postgresqlConfig;
         $config = $postgresqlConfig->buildConfig();
-        $this->pool = new Channel($postgresqlConfig->getPoolMaxNumber());
+        $this->pool = DIGet(Channel::class, [$postgresqlConfig->getPoolMaxNumber()]);
         for ($i = 0; $i < $postgresqlConfig->getPoolMaxNumber(); $i++) {
             $db = new PostgresDb($config['db'], $config['host'], $config['username'], $config['password']);
             $this->pool->push($db);
@@ -50,17 +50,17 @@ class PostgresqlPool
     }
 
     /**
-     * @return PostgresqlConfig
+     * @return PostgresqlOneConfig
      */
-    public function getPostgresqlConfig(): PostgresqlConfig
+    public function getPostgresqlConfig(): PostgresqlOneConfig
     {
         return $this->postgresqlConfig;
     }
 
     /**
-     * @param PostgresqlConfig $postgresqlConfig
+     * @param PostgresqlOneConfig $postgresqlConfig
      */
-    public function setPostgresqlConfig(PostgresqlConfig $postgresqlConfig): void
+    public function setPostgresqlConfig(PostgresqlOneConfig $postgresqlConfig): void
     {
         $this->postgresqlConfig = $postgresqlConfig;
     }
