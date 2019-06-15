@@ -79,6 +79,7 @@ class PostgresqlPlugin extends AbstractPlugin
         $postgresDbProxy = new PostgresDbProxy();
         $this->setToDIContainer(PostgresDb::class, $postgresDbProxy);
         $this->setToDIContainer(PostgresDb::class, $postgresDbProxy);
+        $this->setToDIContainer(PostgresqlConfig::class, $this->postgresqlConfig);
     }
 
     /**

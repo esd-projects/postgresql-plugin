@@ -7,6 +7,11 @@ use PDO;
 class PostgresDb extends \SeinopSys\PostgresDb
 {
     /**
+     * @var bool Operations in transaction indicator
+     */
+    protected $_transaction_in_progress = false;
+
+    /**
      * Allows passing any PDO object to the class, e.g. one initiated by a different library
      *
      * @param PDO $PDO
@@ -35,5 +40,56 @@ class PostgresDb extends \SeinopSys\PostgresDb
     public function isTransactionInProgress(): bool
     {
         return $this->_transaction_in_progress ?? false;
+    }
+
+    /**
+     * Begin a transaction
+     *
+     * @uses mysqli->autocommit(false)
+     * @uses register_shutdown_function(array($this, "_transaction_shutdown_check"))
+     */
+    public function startTransaction()
+    {
+        $this->getConnection()->beginTransaction();
+        $this->_transaction_in_progress = true;
+        register_shutdown_function(array($this, "_transaction_status_check"));
+    }
+
+    /**
+     * Transaction commit
+     *
+     * @uses $db->commit();
+     */
+    public function commit()
+    {
+        $result = $this->getConnection()->commit();
+        $this->_transaction_in_progress = false;
+        return $result;
+    }
+
+    /**
+     * Transaction rollback function
+     *
+     * @uses $db->rollback();
+     */
+    public function rollback()
+    {
+        $result = $this->getConnection()->rollback();
+        $this->_transaction_in_progress = false;
+        return $result;
+    }
+
+    /**
+     * Shutdown handler to rollback uncommited operations in order to keep
+     * atomic operations sane.
+     *
+     * @uses $db->rollback();
+     */
+    public function _transaction_status_check()
+    {
+        if (!$this->_transaction_in_progress) {
+            return;
+        }
+        $this->rollback();
     }
 }
