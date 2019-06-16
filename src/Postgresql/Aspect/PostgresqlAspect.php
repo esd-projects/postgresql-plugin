@@ -2,7 +2,6 @@
 
 namespace ESD\Plugins\Postgresql\Aspect;
 
-
 use ESD\Core\Coroutine\Channel;
 use ESD\Plugins\Aop\OrderAspect;
 use ESD\Plugins\Postgresql\Annotation\Isolation;

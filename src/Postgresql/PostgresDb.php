@@ -1,6 +1,7 @@
 <?php
 
 namespace ESD\Plugins\Postgresql;
+use mysql_xdevapi\Exception;
 use PDO;
 
 
@@ -10,6 +11,14 @@ class PostgresDb extends \SeinopSys\PostgresDb
      * @var bool Operations in transaction indicator
      */
     protected $_transaction_in_progress = false;
+
+    /**
+     * Per page limit for pagination
+     *
+     * @var int
+     */
+
+    public $pageLimit = 20;
 
     /**
      * Allows passing any PDO object to the class, e.g. one initiated by a different library
@@ -91,5 +100,20 @@ class PostgresDb extends \SeinopSys\PostgresDb
             return;
         }
         $this->rollback();
+    }
+
+    /**
+     * Pagination wraper to get()
+     *
+     * @access public
+     * @param string  $table The name of the database table to work with
+     * @param int $page Page number
+     * @param array|string $fields Array or coma separated list of fields to fetch
+     * @return array
+     */
+    public function paginate($table, $page, $fields = null) {
+        $offset = $this->pageLimit * ($page - 1);
+        $res = $this->get($table, Array($offset, $this->pageLimit), $fields);
+        return $res;
     }
 }
