@@ -272,7 +272,7 @@ $res = $db->paginate("p_customer", $page);
 
 ```php
 $res = $this->postgresql()
-            ->query('SELECT * from p_customer where contact->>'phone' = ?', Array('15838381234'));
+            ->query("SELECT * from p_customer where contact->>'phone' = ?", Array('15838381234'));
 ```
 
 
