@@ -20,9 +20,9 @@ class PostgresqlConfig
     /**
      * @param PostgresqlOneConfig[] $postgresqlConfigs
      */
-    public function setPostgresqlConfigs(array $mysqlConfigs): void
+    public function setPostgresqlConfigs(array $postgresqlConfigs): void
     {
-        $this->postgresqlConfigs = $mysqlConfigs;
+        $this->postgresqlConfigs = $postgresqlConfigs;
     }
 
     public function addPostgresqlOneConfig(PostgresqlOneConfig $buildFromConfig)

@@ -137,8 +137,8 @@ $res = $this->postgresql()->insert("p_customer", [
 
 ```php
 $res = $this->postgresql()
-            ->where("contact->>'phone'", '15838381234')
-			->get("p_customer");
+				->where("contact->>'phone'", '15838381234')
+				->get("p_customer");
 ```
 
 
@@ -147,10 +147,10 @@ $res = $this->postgresql()
 
 ```sql
 $res = $this->postgresql()
-            ->where("contact->>'phone'", '15838381234')
-            ->update("p_customer", [
-                "user_name" => "钱三强"
-            ]);
+				->where("contact->>'phone'", '15838381234')
+				->update("p_customer", [
+			"user_name" => "钱三强"
+		]);
 ```
 
 
@@ -169,8 +169,8 @@ $res = $this->postgresql()
 
 ```php
 $res = $this->postgresql()
-			->orderByd("contact->>'QQ'", "ASC")
-            ->get("p_customer");
+    		->orderByd("contact->>'QQ'", "ASC")
+			->get("p_customer");
 ```
 
 
@@ -179,8 +179,8 @@ $res = $this->postgresql()
 
 ```php
 $res = $this->postgresql()
-            ->groupBy("contact->>'QQ'")
-            ->get("p_customer");
+			->groupBy("contact->>'QQ'")
+    		->get("p_customer");
 ```
 
 
@@ -189,9 +189,9 @@ $res = $this->postgresql()
 
 ```php
 $res = $this->postgresql()
-            ->join("p_customer_qq cq", "c.contact->>'QQ' = cq.qq_number", "LEFT")
-            ->where("c.contact->>'phone'", '15838381234')
-            ->get("p_customer c", NULL, "c.*, cq.qq_avator");
+			->join("p_customer_qq cq", "c.contact->>'QQ' = cq.qq_number", "LEFT")
+    		->where("c.contact->>'phone'", '15838381234')
+    		->get("p_customer c", NULL, "c.*, cq.qq_avator");
 ```
 
 
@@ -202,8 +202,8 @@ A convenient function that returns TRUE if exists at least an element that satis
 
 ```php
 $res = $this->postgresql()
-            ->where("contact->>'phone'", '15838381234')
-            ->has("p_customer");
+    		->where("contact->>'phone'", '15838381234')
+    		->has("p_customer");
 ```
 
 
@@ -221,7 +221,7 @@ $sql = $this->postgresql()->getLastQuery();
 ### Check if table exists
 
 ```php
-$exist = $this->postgresql()->tableExists('p_customer');
+$exist = $this->postgresql()->tableExists("p_customer");
 ```
 
 
@@ -272,7 +272,7 @@ $res = $db->paginate("p_customer", $page);
 
 ```php
 $res = $this->postgresql()
-            ->query("SELECT * from p_customer where contact->>'phone' = ?", Array('15838381234'));
+    ->query('SELECT * from p_customer where contact->>'phone' = ?', Array('15838381234'));
 ```
 
 

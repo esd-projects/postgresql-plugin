@@ -108,8 +108,8 @@ class PostgresqlPlugin extends AbstractPlugin
             $this->debug("已添加名为 {$postgresqlConfig->getName()} 的postgresql连接池");
         }
         $context->add("postgresqlPool", $postgresqlManyPool);
-        $this->setToDIContainer(postgresqlManyPool::class, $postgresqlManyPool);
-        $this->setToDIContainer(postgresqlPool::class, $postgresqlManyPool->getPool());
+        $this->setToDIContainer(PostgresqlManyPool::class, $postgresqlManyPool);
+        $this->setToDIContainer(PostgresqlPool::class, $postgresqlManyPool->getPool());
         $this->ready();
     }
 
@@ -118,7 +118,7 @@ class PostgresqlPlugin extends AbstractPlugin
      */
     public function getConfigList(): array
     {
-        return $this->configList;
+        return $this->postgresqlConfig->getPostgresqlConfigs();
     }
 
     /**
@@ -126,14 +126,14 @@ class PostgresqlPlugin extends AbstractPlugin
      */
     public function setConfigList(array $configList): void
     {
-        $this->configList = $configList;
+        $this->postgresqlConfig->setPostgresqlConfigs($configList);
     }
 
     /**
-     * @param PostgresqlOneConfig $mysqlConfig
+     * @param PostgresqlOneConfig $postgresqlOneConfig
      */
-    public function addConfigList(PostgresqlOneConfig $mysqlConfig): void
+    public function addConfigList(PostgresqlOneConfig $postgresqlOneConfig): void
     {
-        $this->configList[$mysqlConfig->getName()] = $mysqlConfig;
+        $this->postgresqlConfig->addPostgresqlOneConfig($postgresqlOneConfig);
     }
 }
