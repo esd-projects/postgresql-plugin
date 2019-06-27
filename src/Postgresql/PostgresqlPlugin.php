@@ -92,20 +92,15 @@ class PostgresqlPlugin extends AbstractPlugin
     public function beforeProcessStart(Context $context)
     {
         $postgresqlManyPool = new PostgresqlManyPool();
-        //重新获取配置
-        $this->configList = [];
-        $configs = Server::$instance->getConfigContext()->get(PostgresqlOneConfig::key, []);
+        $configs = $this->postgresqlConfig->getPostgresqlConfigs();
         if (empty($configs)) {
             $this->warn("没有postgresql配置");
             return false;
         }
         foreach ($configs as $key => $value) {
-            $postgresqlConfig = new PostgresqlOneConfig("", "", "", "");
-            $postgresqlConfig->setName($key);
-            $this->configList[$key] = $postgresqlConfig->buildFromConfig($value);
-            $postgresqlPool = new PostgresqlPool($postgresqlConfig);
+            $postgresqlPool = new PostgresqlPool($value);
             $postgresqlManyPool->addPool($postgresqlPool);
-            $this->debug("已添加名为 {$postgresqlConfig->getName()} 的postgresql连接池");
+            $this->debug("已添加名为 {$value->getName()} 的postgresql连接池");
         }
         $context->add("postgresqlPool", $postgresqlManyPool);
         $this->setToDIContainer(PostgresqlManyPool::class, $postgresqlManyPool);
