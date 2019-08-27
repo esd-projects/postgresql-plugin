@@ -1,26 +1,24 @@
 <?php
 namespace ESD\Plugins\Postgresql;
 
-use ESD\BaseServer\Server\Server;
-
 trait GetPostgresql
 {
     /**
      * @param string $name
      * @return \ESD\Plugins\Postgresql\PostgresDb
-     * @throws \ESD\BaseServer\Exception
+     * @throws \ESD\Plugins\Postgresql\PostgresqlException
      */
     public function postgresql($name = "default")
     {
         $db = getContextValue("PostgresDb:$name");
         if ($db == null) {
+            /** @var PostgresqlManyPool $postgresqlPool */
             $postgresqlPool = getDeepContextValueByClassName(PostgresqlManyPool::class);
-            if ($postgresqlPool instanceof PostgresqlManyPool) {
-                $db = $postgresqlPool->getPool($name)->db();
-                return $db;
-            } else {
-                throw new PostgresqlException("没有找到名为{$name}的postgresql连接池");
+            $pool = $postgresqlPool->getPool($name);
+            if ($pool == null) {
+                throw new PostgresqlException("No Postgresql connection pool named {$name} was found");
             }
+            return $pool->db();
         } else {
             return $db;
         }
